@@ -1,5 +1,6 @@
 from tictactoe import TicTacToe
 
+
 def main():
     tic = TicTacToe()
     tic.drawBoard()
