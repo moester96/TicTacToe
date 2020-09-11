@@ -1,11 +1,15 @@
 import turtle
 import tkinter
-
+import sys
 
 class TicTacToe:
     square_mid_points = {'0': (-200, 200), '1': (0, 200), '2': (200, 200),
                          '3': (-200, 0), '4': (0, 0), '5': (200, 0),
                          '6': (-200, -200), '7': (0, -200), '8': (200, -200)}
+
+    square_coordinates = {'0': (0, 0), '1': (0, 1), '2': (0, 2),
+                          '3': (1, 0), '4': (1, 1), '5': (1, 2),
+                          '6': (2, 0), '7': (2, 1), '8': (2, 2)}
 
     def __init__(self):
         self.turtle = turtle.Turtle()
@@ -14,7 +18,8 @@ class TicTacToe:
         self.next_turn = ''
         self.num_turns = 0
         self.square = 0
-        self.isWinner = False
+        self.row = 0
+        self.col = 0
 
     def chooseLetter(self):
         letter = input('Please select your letter of choice: X or O\n')
@@ -39,7 +44,7 @@ class TicTacToe:
         self.turtle.home()
 
     def drawO(self):
-        square = str(self.square)
+        square = self.square
         mid_point = TicTacToe.square_mid_points.get(square)
 
         self.turtle.penup()
@@ -50,72 +55,82 @@ class TicTacToe:
         self.turtle.penup()
 
     def checkWinner(self):
+        column = []
         first_diagonal = []
         second_diagonal = []
 
         # Checks rows
         for i in range(3):
-            if set(self.board[i]) == 1:
-                print('Winner')
+            if len(set(self.board[i])) == 1 and self.board[i].count('') == 0:
                 return True
 
         # Checks columns
         for i in range(3):
-            if set(self.board[0][i]) == 1:
-                print('Winner')
+            column = [col[i] for col in self.board]
+            if len(set(column)) == 1 and column.count('') == 0:
                 return True
 
         # Checks first diagonal
         for i in range(3):
             first_diagonal.append(self.board[i][i])
 
-        if set(first_diagonal) == 1:
-            print('Winner')
+        if len(set(first_diagonal)) == 1 and first_diagonal.count('') == 0:
             return True
         else:
             first_diagonal = []
 
         # Checks second diagonal
         for i in range(3):
-            if i != 1:
+            if i == 0:
                 second_diagonal.append(self.board[i][2])
-            else:
+            elif i == 1:
                 second_diagonal.append(self.board[i][i])
+            else:
+                second_diagonal.append(self.board[i][0])
 
-        if set(second_diagonal) == 1:
-            print('Winner')
+        if len(set(second_diagonal)) == 1 and second_diagonal.count('') == 0:
             return True
         else:
-            first_diagonal = []
+            second_diagonal = []
 
-        print('No winner')
         return False
 
     def checkDraw(self):
         if self.checkWinner() == False:
-            print('Draw')
+            self.turtle.home()
+            self.turtle.goto(-80, 325)
+            self.turtle.write('Draw', font=('Arial', 50, 'normal'))
+
+    def playAgain(self):
+        pass
 
     def getMouseClick(self, x, y):
         column = (x + 300) // 200
         row = (-y + 300) // 200
-        square = column + row*3
-        self.square = int(square)
+        self.square = str(int(column + row*3))
+        self.row, self.col = TicTacToe.square_coordinates.get(self.square)
 
-        if self.board[self.square] == '' and self.next_turn == 'x':
+        if self.board[self.row][self.col] == '' and self.next_turn == 'x':
             self.drawX()
-            self.board[self.square] = self.next_turn
+            self.board[self.row][self.col] = self.next_turn
             self.next_turn = 'o'
             self.num_turns += 1
             if self.num_turns >= 5:
-                self.isWinner = self.checkWinner()
+                if self.checkWinner():
+                    self.turtle.home()
+                    self.turtle.goto(-100, 325)
+                    self.turtle.write('Winner', font=('Arial', 50, 'normal'))
 
-        elif self.board[self.square] == '' and self.next_turn == 'o':
+        elif self.board[self.row][self.col] == '' and self.next_turn == 'o':
             self.drawO()
-            self.board[self.square] = self.next_turn
+            self.board[self.row][self.col] = self.next_turn
             self.next_turn = 'x'
             self.num_turns += 1
             if self.num_turns >= 5:
-                self.isWinner = self.checkWinner()
+                if self.checkWinner():
+                    self.turtle.home()
+                    self.turtle.goto(-100, 325)
+                    self.turtle.write('Winner', font=('Arial', 50, 'normal'))
 
         if self.num_turns == 9:
             self.checkDraw()
