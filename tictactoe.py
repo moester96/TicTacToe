@@ -1,6 +1,5 @@
 import turtle
 import tkinter
-import sys
 
 class TicTacToe:
     square_mid_points = {'0': (-200, 200), '1': (0, 200), '2': (200, 200),
