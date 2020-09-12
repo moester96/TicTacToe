@@ -1,5 +1,7 @@
 import turtle
 import tkinter
+import sys
+
 
 class TicTacToe:
     square_mid_points = {'0': (-200, 200), '1': (0, 200), '2': (200, 200),
@@ -100,9 +102,6 @@ class TicTacToe:
             self.turtle.goto(-80, 325)
             self.turtle.write('Draw', font=('Arial', 50, 'normal'))
 
-    def playAgain(self):
-        pass
-
     def getMouseClick(self, x, y):
         column = (x + 300) // 200
         row = (-y + 300) // 200
@@ -119,6 +118,8 @@ class TicTacToe:
                     self.turtle.home()
                     self.turtle.goto(-100, 325)
                     self.turtle.write('Winner', font=('Arial', 50, 'normal'))
+                    self.screen._onscreenclick(None)
+                    self.playAgain()
 
         elif self.board[self.row][self.col] == '' and self.next_turn == 'o':
             self.drawO()
@@ -130,9 +131,13 @@ class TicTacToe:
                     self.turtle.home()
                     self.turtle.goto(-100, 325)
                     self.turtle.write('Winner', font=('Arial', 50, 'normal'))
+                    self.screen._onscreenclick(None)
+                    self.playAgain()
 
         if self.num_turns == 9:
             self.checkDraw()
+            self.screen._onscreenclick(None)
+            self.playAgain()
 
     def drawBoard(self):
         self.screen.title("TicTacToe")
@@ -189,3 +194,15 @@ class TicTacToe:
 
         self.screen.update()
         tkinter.mainloop()
+
+    def playAgain(self):
+        replay = input('Play Again? y/n\n')
+        replay = replay.lower()
+        if replay == 'y':
+            self.screen.clearscreen()
+            self.board = [['' for i in range(3)] for j in range(3)]
+            self.num_turns = 0
+            self.chooseLetter()
+            self.drawBoard()
+        else:
+            sys.exit()
